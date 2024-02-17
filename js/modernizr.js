@@ -1,26 +1,4 @@
-/*!
- * Modernizr v2.8.3
- * www.modernizr.com
- *
- * Copyright (c) Faruk Ates, Paul Irish, Alex Sexton
- * Available under the BSD and MIT licenses: www.modernizr.com/license/
- */
 
-/*
- * Modernizr tests which native CSS3 and HTML5 features are available in
- * the current UA and makes the results available to you in two ways:
- * as properties on a global Modernizr object, and as classes on the
- * <html> element. This information allows you to progressively enhance
- * your pages with a granular level of control over the experience.
- *
- * Modernizr has an optional (not included) conditional resource loader
- * called Modernizr.load(), based on Yepnope.js (yepnopejs.com).
- * To get a build that includes Modernizr.load(), as well as choosing
- * which tests to include, go to www.modernizr.com/download/
- *
- * Authors        Faruk Ates, Paul Irish, Alex Sexton
- * Contributors   Ryan Seddon, Ben Alman
- */
 
 window.Modernizr = (function( window, document, undefined ) {
 
@@ -169,18 +147,8 @@ window.Modernizr = (function( window, document, undefined ) {
 
       return bool;
 
-     },
-     /*>>mq*/
+},
 
-
-    /*>>hasevent*/
-    //
-    // isEventSupported determines if a given element supports the given event
-    // kangax.github.com/iseventsupported/
-    //
-    // The following results are known incorrects:
-    //   Modernizr.hasEvent("webkitTransitionEnd", elem) // false negative
-    //   Modernizr.hasEvent("textInput") // in Webkit. github.com/Modernizr/Modernizr/issues/333
     //   ...
     isEventSupported = (function() {
 
@@ -195,11 +163,9 @@ window.Modernizr = (function( window, document, undefined ) {
         element = element || document.createElement(TAGNAMES[eventName] || 'div');
         eventName = 'on' + eventName;
 
-        // When using `setAttribute`, IE skips "unload", WebKit skips "unload" and "resize", whereas `in` "catches" those
         var isSupported = eventName in element;
 
         if ( !isSupported ) {
-          // If it has no `setAttribute` (i.e. doesn't implement Node interface), try generic element
           if ( !element.setAttribute ) {
             element = document.createElement('div');
           }
@@ -207,7 +173,6 @@ window.Modernizr = (function( window, document, undefined ) {
             element.setAttribute(eventName, '');
             isSupported = is(element[eventName], 'function');
 
-            // If property was created, "remove it" (by setting value to `undefined`)
             if ( !is(element[eventName], 'undefined') ) {
               element[eventName] = undefined;
             }
@@ -220,11 +185,6 @@ window.Modernizr = (function( window, document, undefined ) {
       }
       return isEventSupported;
     })(),
-    /*>>hasevent*/
-
-    // TODO :: Add flag for hasownprop ? didn't last time
-
-    // hasOwnProperty shim by kangax needed for Safari 2.0 support
     _hasOwnProperty = ({}).hasOwnProperty, hasOwnProp;
 
     if ( !is(_hasOwnProperty, 'undefined') && !is(_hasOwnProperty.call, 'undefined') ) {
@@ -233,13 +193,10 @@ window.Modernizr = (function( window, document, undefined ) {
       };
     }
     else {
-      hasOwnProp = function (object, property) { /* yes, this can give false positives/negatives, but most of the time we don't care about those */
+      hasOwnProp = function (object, property) {
         return ((property in object) && is(object.constructor.prototype[property], 'undefined'));
       };
     }
-
-    // Adapted from ES5-shim https://github.com/kriskowal/es5-shim/blob/master/es5-shim.js
-    // es5.github.com/#x15.3.4.5
 
     if (!Function.prototype.bind) {
       Function.prototype.bind = function bind(that) {
@@ -282,54 +239,18 @@ window.Modernizr = (function( window, document, undefined ) {
         return bound;
       };
     }
-
-    /**
-     * setCss applies given styles to the Modernizr DOM node.
-     */
     function setCss( str ) {
         mStyle.cssText = str;
     }
-
-    /**
-     * setCssAll extrapolates all vendor-specific css strings.
-     */
     function setCssAll( str1, str2 ) {
         return setCss(prefixes.join(str1 + ';') + ( str2 || '' ));
     }
-
-    /**
-     * is returns a boolean for if typeof obj is exactly type.
-     */
     function is( obj, type ) {
         return typeof obj === type;
     }
-
-    /**
-     * contains returns a boolean for if substr is found within str.
-     */
     function contains( str, substr ) {
         return !!~('' + str).indexOf(substr);
     }
-
-    /*>>testprop*/
-
-    // testProps is a generic CSS / DOM property test.
-
-    // In testing support for a given CSS property, it's legit to test:
-    //    `elem.style[styleName] !== undefined`
-    // If the property is supported it will return an empty string,
-    // if unsupported it will return undefined.
-
-    // We'll take advantage of this quick test and skip setting a style
-    // on our modernizr element, but instead just testing undefined vs
-    // empty string.
-
-    // Because the testing of the CSS property names (with "-", as
-    // opposed to the camelCase DOM properties) is non-portable and
-    // non-standard but works in WebKit and IE (but not Gecko or Opera),
-    // we explicitly reject properties with dashes so that authors
-    // developing in WebKit or IE first don't end up with
-    // browser-specific content by accident.
 
     function testProps( props, prefixed ) {
         for ( var i in props ) {
@@ -340,82 +261,39 @@ window.Modernizr = (function( window, document, undefined ) {
         }
         return false;
     }
-    /*>>testprop*/
-
-    // TODO :: add testDOMProps
-    /**
-     * testDOMProps is a generic DOM property test; if a browser supports
-     *   a certain property, it won't return undefined for it.
-     */
     function testDOMProps( props, obj, elem ) {
         for ( var i in props ) {
             var item = obj[props[i]];
             if ( item !== undefined) {
 
-                // return the property name as a string
                 if (elem === false) return props[i];
 
-                // let's bind a function
                 if (is(item, 'function')){
-                  // default to autobind unless override
                   return item.bind(elem || obj);
                 }
-
-                // return the unbound function or obj or value
                 return item;
             }
         }
         return false;
     }
-
-    /*>>testallprops*/
-    /**
-     * testPropsAll tests a list of DOM properties we want to check against.
-     *   We specify literally ALL possible (known and/or likely) properties on
-     *   the element including the non-vendor prefixed one, for forward-
-     *   compatibility.
-     */
     function testPropsAll( prop, prefixed, elem ) {
 
         var ucProp  = prop.charAt(0).toUpperCase() + prop.slice(1),
             props   = (prop + ' ' + cssomPrefixes.join(ucProp + ' ') + ucProp).split(' ');
 
-        // did they call .prefixed('boxSizing') or are we just testing a prop?
         if(is(prefixed, "string") || is(prefixed, "undefined")) {
           return testProps(props, prefixed);
-
-        // otherwise, they called .prefixed('requestAnimationFrame', window[, elem])
         } else {
           props = (prop + ' ' + (domPrefixes).join(ucProp + ' ') + ucProp).split(' ');
           return testDOMProps(props, prefixed, elem);
         }
     }
-    /*>>testallprops*/
-
-
-    /**
-     * Tests
-     * -----
-     */
-
-    // The *new* flexbox
-    // dev.w3.org/csswg/css3-flexbox
-
     tests['flexbox'] = function() {
       return testPropsAll('flexWrap');
     };
-
-    // The *old* flexbox
-    // www.w3.org/TR/2009/WD-css3-flexbox-20090723/
-
     tests['flexboxlegacy'] = function() {
         return testPropsAll('boxDirection');
     };
-
-    // On the S60 and BB Storm, getContext exists, but always returns undefined
-    // so we actually have to call getContext() to verify
-    // github.com/Modernizr/Modernizr/issues/issue/97/
-
     tests['canvas'] = function() {
         var elem = document.createElement('canvas');
         return !!(elem.getContext && elem.getContext('2d'));
@@ -424,29 +302,9 @@ window.Modernizr = (function( window, document, undefined ) {
     tests['canvastext'] = function() {
         return !!(Modernizr['canvas'] && is(document.createElement('canvas').getContext('2d').fillText, 'function'));
     };
-
-    // webk.it/70117 is tracking a legit WebGL feature detect proposal
-
-    // We do a soft detect which may false positive in order to avoid
-    // an expensive context creation: bugzil.la/732441
-
     tests['webgl'] = function() {
         return !!window.WebGLRenderingContext;
     };
-
-    /*
-     * The Modernizr.touch test only indicates if the browser supports
-     *    touch events, which does not necessarily reflect a touchscreen
-     *    device, as evidenced by tablets running Windows 7 or, alas,
-     *    the Palm Pre / WebOS (touch) phones.
-     *
-     * Additionally, Chrome (desktop) used to lie about its support on this,
-     *    but that has since been rectified: crbug.com/36415
-     *
-     * We also test for Firefox 4 Multitouch Support.
-     *
-     * For more info, see: modernizr.github.com/Modernizr/touch.html
-     */
 
     tests['touch'] = function() {
         var bool;
@@ -461,18 +319,6 @@ window.Modernizr = (function( window, document, undefined ) {
 
         return bool;
     };
-
-
-    // geolocation is often considered a trivial feature detect...
-    // Turns out, it's quite tricky to get right:
-    //
-    // Using !!navigator.geolocation does two things we don't want. It:
-    //   1. Leaks memory in IE9: github.com/Modernizr/Modernizr/issues/513
-    //   2. Disables page caching in WebKit: webk.it/43956
-    //
-    // Meanwhile, in Firefox < 8, an about:config setting could expose
-    // a false positive that would throw an exception: bugzil.la/688158
-
     tests['geolocation'] = function() {
         return 'geolocation' in navigator;
     };
@@ -482,32 +328,16 @@ window.Modernizr = (function( window, document, undefined ) {
       return !!window.postMessage;
     };
 
-
-    // Chrome incognito mode used to throw an exception when using openDatabase
-    // It doesn't anymore.
     tests['websqldatabase'] = function() {
       return !!window.openDatabase;
     };
 
-    // Vendors had inconsistent prefixing with the experimental Indexed DB:
-    // - Webkit's implementation is accessible through webkitIndexedDB
-    // - Firefox shipped moz_indexedDB before FF4b9, but since then has been mozIndexedDB
-    // For speed, we don't test the legacy (and beta-only) indexedDB
     tests['indexedDB'] = function() {
       return !!testPropsAll("indexedDB", window);
     };
-
-    // documentMode logic from YUI to filter out IE8 Compat Mode
-    //   which false positives.
     tests['hashchange'] = function() {
       return isEventSupported('hashchange', window) && (document.documentMode === undefined || document.documentMode > 7);
     };
-
-    // Per 1.6:
-    // This used to be Modernizr.historymanagement but the longer
-    // name has been deprecated in favor of a shorter and property-matching one.
-    // The old API is still available in 1.6, but as of 2.0 will throw a warning,
-    // and in the first release thereafter disappear entirely.
     tests['history'] = function() {
       return !!(window.history && history.pushState);
     };
@@ -517,18 +347,12 @@ window.Modernizr = (function( window, document, undefined ) {
         return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);
     };
 
-    // FF3.6 was EOL'ed on 4/24/12, but the ESR version of FF10
-    // will be supported until FF19 (2/12/13), at which time, ESR becomes FF17.
-    // FF10 still uses prefixes, so check for it until then.
-    // for more ESR info, see: mozilla.org/en-US/firefox/organizations/faq/
     tests['websockets'] = function() {
         return 'WebSocket' in window || 'MozWebSocket' in window;
     };
 
 
-    // css-tricks.com/rgba-browser-support/
     tests['rgba'] = function() {
-        // Set an rgba() color and check the returned value
 
         setCss('background-color:rgba(150,255,150,.5)');
 
@@ -536,8 +360,6 @@ window.Modernizr = (function( window, document, undefined ) {
     };
 
     tests['hsla'] = function() {
-        // Same as rgba(), in fact, browsers re-map hsla() to rgba() internally,
-        //   except IE9 who retains it as hsla
 
         setCss('background-color:hsla(120,40%,100%,.5)');
 
@@ -545,22 +367,11 @@ window.Modernizr = (function( window, document, undefined ) {
     };
 
     tests['multiplebgs'] = function() {
-        // Setting multiple images AND a color on the background shorthand property
-        //  and then querying the style.background property value for the number of
-        //  occurrences of "url(" is a reliable method for detecting ACTUAL support for this!
 
         setCss('background:url(https://),url(https://),red url(https://)');
 
-        // If the UA supports multiple backgrounds, there should be three occurrences
-        //   of the string "url(" in the return value for elemStyle.background
-
         return (/(url\s*\(.*?){3}/).test(mStyle.background);
     };
-
-
-
-    // this will false positive in Opera Mini
-    //   github.com/Modernizr/Modernizr/issues/396
 
     tests['backgroundsize'] = function() {
         return testPropsAll('backgroundSize');
@@ -570,29 +381,20 @@ window.Modernizr = (function( window, document, undefined ) {
         return testPropsAll('borderImage');
     };
 
-
-    // Super comprehensive table about all the unique implementations of
-    // border-radius: muddledramblings.com/table-of-css3-border-radius-compliance
-
     tests['borderradius'] = function() {
         return testPropsAll('borderRadius');
     };
 
-    // WebOS unfortunately false positives on this test.
     tests['boxshadow'] = function() {
         return testPropsAll('boxShadow');
     };
-
-    // FF3.0 will false positive on this test
     tests['textshadow'] = function() {
         return document.createElement('div').style.textShadow === '';
     };
 
 
     tests['opacity'] = function() {
-        // Browsers that actually have CSS Opacity implemented have done so
-        //  according to spec, which means their return values are within the
-        //  range of [0.0,1.0] - including the leading zero.
+
 
         setCssAll('opacity:.55');
 
