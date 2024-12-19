@@ -43,8 +43,7 @@ var support = {};
 
 
 
-var
-	document = window.document,
+var document = window.document,
 
 	version = "2.1.1",
 
